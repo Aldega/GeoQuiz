@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProviders
 
 class MainActivity : AppCompatActivity() {
 
@@ -15,16 +16,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var questionTextView: TextView
     private val TAG = "MainActivity"
 
-    private val questionBank = listOf(
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_mideast, false),
-        Question(R.string.question_africa, false),
-        Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true)
-    )
 
-    private var currentIndex = 0
+    private val quizViewModel: QuizViewModel by lazy {
+        ViewModelProviders.of(this).get(QuizViewModel::class.java)
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,11 +39,10 @@ class MainActivity : AppCompatActivity() {
             showAnswer(true) }
         falseButton.setOnClickListener {
             setAnswerButtonsClickable(false)
-
             showAnswer(false) }
 
         nextButton.setOnClickListener {
-            currentIndex = (currentIndex + 1) % questionBank.size
+            quizViewModel.moveToNext()
             showQuestion()
             setAnswerButtonsClickable(true)
         }
@@ -86,7 +81,7 @@ class MainActivity : AppCompatActivity() {
 
 
     fun showAnswer(answer: Boolean) {
-        if (answer == questionBank[currentIndex].answer) {
+        if (answer == quizViewModel.currentQuestionAnswer) {
             Toast.makeText(this, R.string.correct_toast, Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(this, R.string.incorrect_toast, Toast.LENGTH_SHORT).show()
@@ -94,7 +89,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showQuestion() {
-        val questionTextResId = questionBank[currentIndex].textResId
+        val questionTextResId = quizViewModel.currentQuestionText
         questionTextView.setText(questionTextResId)
     }
 }

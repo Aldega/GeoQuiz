@@ -15,6 +15,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nextButton: Button
     private lateinit var questionTextView: TextView
     private val TAG = "MainActivity"
+    private val KEY_INDEX = "index"
 
 
     private val quizViewModel: QuizViewModel by lazy {
@@ -26,6 +27,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate(Bundle?) called")
         setContentView(R.layout.activity_main)
+
+        quizViewModel.currentIndex = savedInstanceState?.getInt(KEY_INDEX, 0) ?: 0
 
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
@@ -79,6 +82,11 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "onDestroy() called")
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.d(TAG, "onSaveInstanceState() called")
+        outState.putInt(KEY_INDEX, quizViewModel.currentIndex)
+    }
 
     fun showAnswer(answer: Boolean) {
         if (answer == quizViewModel.currentQuestionAnswer) {
